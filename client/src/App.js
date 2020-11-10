@@ -1,17 +1,35 @@
 import "./App.css";
 import { Container, AppBar, Typography, Grow, Grid } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+
 import memories from "./images/42509-Memories.jpg";
 import Posts from "./component/Posts/Posts";
 import Form from "./component/Form/Form";
+import useStyles from "./styles.js";
+import { useEffect } from "react";
+
+import { getPosts } from "./actions/posts";
 
 function App() {
+   const classes = useStyles();
+   const dispatch = useDispatch();
+
+   useEffect(() => {
+      dispatch(getPosts());
+   }, [dispatch]);
+
    return (
       <Container maxWidth="lg">
-         <AppBar position="static" color="inherit">
-            <Typography varaint="h2" align="center">
+         <AppBar className={classes.appBar} position="static" color="inherit">
+            <Typography className={classes.heading} variant="h2" align="center">
                Memories
             </Typography>
-            <img src={memories} alt="memories" height="120" />
+            <img
+               className={classes.image}
+               src={memories}
+               alt="memories"
+               height="60"
+            />
          </AppBar>
          <Grow in>
             <Container>
