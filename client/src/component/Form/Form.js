@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import FileBase from "react-file-base64";
 import useStyles from "./styles.js";
 import { useDispatch } from "react-redux";
 import { createPost, updatePost } from "../../actions/posts";
-
+import { useSelector } from "react-redux";
 // GET THE CURRENT ID
 
 const Form = ({ setCurrentId, currentId }) => {
@@ -16,8 +16,16 @@ const Form = ({ setCurrentId, currentId }) => {
       selectedFile: "",
    });
 
+   const post = useSelector((state) =>
+      currentId ? state.posts.find((p) => p._id === currentId) : null
+   );
+
    const classes = useStyles();
    const dispatch = useDispatch();
+
+   useEffect(() => {
+      if (post) setpostData(post);
+   }, [post]);
 
    const handleSubmit = (e) => {
       e.preventDefault();
@@ -27,9 +35,19 @@ const Form = ({ setCurrentId, currentId }) => {
       } else {
          dispatch(createPost(postData));
       }
+      clear();
    };
 
-   const clear = () => {};
+   const clear = () => {
+      setCurrentId(null);
+      setpostData({
+         creator: "",
+         title: "",
+         message: "",
+         tags: "",
+         selectedFile: "",
+      });
+   };
 
    return (
       <Paper className={classes.paper}>
@@ -39,7 +57,9 @@ const Form = ({ setCurrentId, currentId }) => {
             className={`${classes.form} ${classes.root}`}
             onSubmit={handleSubmit}
          >
-            <Typography variant="h6">Creating a Memory</Typography>
+            <Typography variant="h6">
+               {currentId ? "Editing" : "Creating"} a Memory
+            </Typography>
 
             <TextField
                name="creater"
@@ -89,7 +109,7 @@ const Form = ({ setCurrentId, currentId }) => {
                onChange={(e) =>
                   setpostData({
                      ...postData,
-                     tags: e.target.value,
+                     tags: e.target.value.split(","),
                   })
                }
             />
